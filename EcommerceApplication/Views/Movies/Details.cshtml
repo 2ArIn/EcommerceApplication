@@ -1,0 +1,122 @@
+﻿
+@using EcommerceApplication.Utilities.Convertor;
+@model Movie
+@{
+    ViewData["Title"] = "جزئیات یک فیلم";
+}
+<div class="row">
+        <div class="col-md-8 offset-2">
+            <div class="card mb-12">
+                <div class="row g-0">
+                    <div class="col-md-12">
+                        <div class="card-header text-white bg-info">
+                            <p class="card-text">
+                                <h5 class="card-title">
+                                    @Model.Name
+                                </h5>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <img src="@Model.ImageURL" alt="@Model.Name" style="max-width:200px;" />
+
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <p class="card-text">@Model.Description</p>
+                            <p class="card-text"><b>امتیاز :</b>@Model.MovieDetail.Rank</p>
+                            <p class="card-text">
+                                <b>سینما : </b>
+                               @* @{
+                                    string cinemas = "";
+                                }*@
+                                @foreach (var cinema in Model.MovieCinemas)
+                                {
+                                   // cinemas += cinema.Cinema.Name + " , ";
+                                   <a asp-controller="Cinemas" asp-action="Details" asp-route-id="@cinema.Cinema.Id">@cinema.Cinema.Name</a>
+                                   <br/>
+                                }
+                                @*@cinemas.Trim().Trim(',')*@
+
+                            </p>
+                            <p>
+                                <b>تهیه کننده:</b>
+                                <a asp-controller="Actors" asp-action="Details" asp-route-id="@Model.MovieDetail.ProducerId">
+                                    @Model.MovieDetail.Producer.FullName
+                                </a>
+                            </p>
+                            <p class="card-text"><b>دسته بندی :</b>@Model.MovieCategory</p>
+                            <p class="card-text"><b>تاریخ شروع :</b>@EcommerceApplication.Utilities.Convertor.ToShamsi.MiladiToShamsi(Model.StartDate)</p>
+                            <p class="card-text"><b>تاریخ پایان :</b>@Model.EndDate.MiladiToShamsi()</p>
+                            <p class="card-text">
+                                <b>وضعیت اکران :</b>
+                                @if (DateTime.Now < Model.StartDate)
+                                {
+                                    <span class="badge bg-success text-white">آماده اکران</span>
+                                }
+                                else if (DateTime.Now >= Model.StartDate && DateTime.Now <= Model.EndDate)
+                                {
+                                    <span class="badge bg-primary text-white">اکران</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger text-white">خارج از اکران</span>
+                                }
+
+                            </p>
+                            <p class="card-text">
+                                <b>بازیگران:</b>
+                                <hr/>
+                                <div class="row">
+                                    @foreach(var actor in Model.MovieActors)
+                                    {
+                                        <div class="card-columns text-center">
+                                            <img class="border-info rounded-circle" src="@actor.Actor.ProfilePictureURL" style="max-width:200px" />
+                                            <br/>
+                                            <a asp-controller="Actors" asp-action="Details" asp-route-id="@actor.Actor.Id">@actor.Actor.FullName</a>
+                                        </div>
+                                    }
+                                </div>
+                            </p>
+                            <p class="card-text">
+                                <b>گالری:</b>
+                                <hr/>
+                                <div class="row">
+
+                                    @foreach (var pic in ViewBag.Pictures)
+                                    {
+                                        <div class="card-rows text-center">
+                                            <img class="border-info rounded-circle" src="@pic.PicUrl" alt="@pic.PicName" style="max-width:200px; margin:5px" />
+
+                                        </div>
+                                    }
+                                </div>
+                            </p>
+                            <p class="card-text">
+                                <b>تریلر:</b>
+                                <hr/>
+                                <div class="row">
+                                    <div class="card-columns text-center">
+                                    <video width="320" height="240" autoplay="autoplay" controls id="video" runat="server"
+                                        src="@Model.MovieDetail.TrailerPath" >
+                                        
+                                    </video>
+                                            
+                                    </div>
+                                </div>
+                            </p>
+
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="card-footer">
+                        <p class="card-text">
+                            <a class="btn btn-outline-primary float-left" asp-action="Index">برگشت به لیست</a>
+                            <a class="btn btn-success text-white" asp-controller="Orders" asp-action="AddItemToShoppingCart" asp-route-id="@Model.Id"><i class="bi bi-cart-plus"></i>  اضافه کردن به سبد خرید (قیمت : @Model.Price)  </a>
+                        </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>

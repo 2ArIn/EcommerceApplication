@@ -1,0 +1,73 @@
+﻿@using EcommerceApplication.Utilities.Convertor;
+@model IEnumerable<Movie>
+@{
+    ViewData["Title"] = "لیست فیلمها";
+}
+<div class="row">
+    @foreach(var item in Model)
+    {
+        <div class="col-md-4 col-xs-6 border-primary mb-3">
+            <div class="card mb-3" style="max-width:540px;">
+                <div class="row g-0">
+                    <div class="col-md-12">
+                        <div class="card-header text-white bg-info">
+                            <p class="card-text">
+                                <h5 class="card-title">
+                                    @item.Name 
+                                    <a class="text-white float-left" asp-action="Edit" asp-route-id="@item.Id"><i class="badge-info bi-pencil-square"></i></a>
+                                </h5>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <img src="@item.ImageURL" alt="@item.Name" style="max-width:200px;" />
+                        
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card-body">
+                            <p class="card-text">@item.Description</p>
+                            <p class="card-text"><b>سینما : </b>
+                                @{
+                                    string cinemas = "";
+                                }
+                                @foreach(var cinema in item.MovieCinemas)
+                                {
+                                    cinemas += cinema.Cinema.Name + " , ";
+                                }
+                                @cinemas.Trim().Trim(',')
+
+                                </p>
+                            <p class="card-text"><b>دسته بندی :</b>@item.MovieCategory</p>
+                            <p class="card-text"><b>تاریخ شروع :</b>@EcommerceApplication.Utilities.Convertor.ToShamsi.MiladiToShamsi(item.StartDate)</p>
+                            <p class="card-text"><b>تاریخ پایان :</b>@item.EndDate.MiladiToShamsi()</p>
+                            <p class="card-text"><b>وضعیت اکران :</b>
+                            @if(DateTime.Now < item.StartDate)
+                                {
+                                    <span class="badge bg-success text-white">آماده اکران</span>
+                                }
+                                else if(DateTime.Now >= item.StartDate && DateTime.Now <= item.EndDate)
+                                {
+                                    <span class="badge bg-primary text-white">اکران</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger text-white">خارج از اکران</span>
+                                }
+
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="card-footer">
+                            <p class="card-text">
+                                <a class="btn btn-outline-primary float-left" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye-fill"></i>مشاهده جزئیات</a>
+                                <a class="btn btn-success text-white" asp-controller="Orders" asp-action="AddItemToShoppingCart" asp-route-id="@item.Id"><i class="bi bi-cart-plus"></i>  اضافه کردن به سبد خرید (قیمت : @item.Price)  </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@await Html.PartialAsync("_CreateItem","Movies");
